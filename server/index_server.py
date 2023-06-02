@@ -27,6 +27,7 @@ def messagesTreatment(client):
         try:
             msg = client.recv(2048)
             contains_ia = str(msg).__contains__('PROMETHEUS')
+            print(f'Message receive server: {msg}\n')
             broadcast(msg, client, contains_ia)
         except:
             deleteClient(client)

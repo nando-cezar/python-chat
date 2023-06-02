@@ -30,7 +30,8 @@ class Client():
     def receiveMessages(self, client):
         while True:
             try:
-                self.__receive = client.recv(2048).decode('utf-8')
+                time.sleep(1)
+                self.setReceiveMessage(client.recv(2048).decode('utf-8'))
                 print(self.__receive)
             except:
                 print('\nNão foi possível permanecer conectado no servidor!\n')
@@ -40,21 +41,25 @@ class Client():
     def sendMessages(self, client):
         while True:
             try:
+                time.sleep(1)
+                print('Processing...\n')
                 if len(self.__send) > 0:
-                    self.send(client, self.__send, self.__username)
+                    self.send(client, self.__send)
                     if self.__send.startswith('#'):
                         response = openia_write(self.__send)
-                        self.send(client, response, 'BOT-PROMETHEUS')
+                        self.send(client, "# " + str(response).strip())
                     self.__send = ''
             except:
                 return
 
-    def send(self, client, prompt, username):
-        client.send(f'<{username}> {prompt}'.encode('utf-8'))
+    def send(self, client, prompt):
+        client.send(f'{prompt}'.encode('utf-8'))
 
     def getReceiveMessage(self):
-        time.sleep(3)
         return self.__receive
+
+    def setReceiveMessage(self, receiveMessage):
+        self.__receive = receiveMessage
 
     def setSendMessages(self, sendMessage):
         self.__send = sendMessage
