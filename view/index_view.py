@@ -1,6 +1,5 @@
-import tkinter
-import tkinter.messagebox
 import customtkinter
+from client.index_client import Client
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -9,6 +8,10 @@ customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "gre
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+
+        # data
+        self.__username = ''
+        self.__client = Client()
 
         # configure window
         self.title("PROMETHEUS")
@@ -44,16 +47,20 @@ class App(customtkinter.CTk):
         self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create textbox
-        self.textbox = customtkinter.CTkTextbox(self, width=1000, height=1000)
+        self.textbox = customtkinter.CTkTextbox(self, state='disabled', width=1000, height=1000)
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
 
         # create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250, height=1000)
         self.tabview.grid(row=0, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.tabview.add("Status")
         self.tabview.add("Configurações")
         self.tabview.add("Rede")
-        self.tabview.tab("Configurações").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
+        self.tabview.tab("Status").grid_columnconfigure(0, weight=1) # configure grid of individual tabs
+        self.tabview.tab("Configurações").grid_columnconfigure(0, weight=1)
         self.tabview.tab("Rede").grid_columnconfigure(0, weight=1)
+        self.text_tab_1 = customtkinter.CTkTextbox(self.tabview.tab("Status"), state='disabled')
+        self.text_tab_1.grid(row=0, column=0, padx=20, pady=20)
         self.string_input_button = customtkinter.CTkButton(self.tabview.tab("Configurações"), text="Perfil",
                                                            command=self.open_input_dialog_event)
         self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
@@ -63,11 +70,19 @@ class App(customtkinter.CTk):
         # set default values
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
-        self.textbox.insert("0.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+
 
     def open_input_dialog_event(self):
+        # establishing connection
         dialog = customtkinter.CTkInputDialog(text="Defina apelido:", title="Editar perfil")
-        print("CTkInputDialog:", dialog.get_input())
+        self.__username = dialog.get_input()
+        self.text_tab_1.configure(state="normal")
+        self.text_tab_1.insert("0.0", f'\nConectando {self.__username} ao servidor.' + "\n")
+        self.text_tab_1.configure(state="disabled")
+        self.__client.setUsername(self.__username)
+        self.__client.connectClient()
+
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -77,7 +92,10 @@ class App(customtkinter.CTk):
         customtkinter.set_widget_scaling(new_scaling_float)
 
     def sidebar_button_event(self):
-        print("sidebar_button click")
+        self.__client.setSendMessages(self.entry.get())
+        self.textbox.configure(state="normal")
+        self.textbox.insert("0.0", self.__client.getReceiveMessage() + "\n")
+        self.textbox.configure(state="disabled")
 
 
 if __name__ == "__main__":
