@@ -22,7 +22,7 @@ class Client():
             return print('\nNão foi possível se conectar ao servidor!\n')
 
         thread1 = threading.Thread(target=self.receiveMessages, args=[client])
-        thread2 = threading.Thread(target=self.sendMessages, args=[client])
+        thread2 = threading.Thread(target=self.sendMessages, args=[client, self.__username])
 
         thread1.start()
         thread2.start()
@@ -31,29 +31,29 @@ class Client():
         while True:
             try:
                 time.sleep(1)
+                print('[Listener receive message in client scope] - Under monitoring...\n')
                 self.setReceiveMessage(client.recv(2048).decode('utf-8'))
-                print(self.__receive)
             except:
                 print('\nNão foi possível permanecer conectado no servidor!\n')
                 print('Pressione <Enter> Para continuar...')
                 client.close()
 
-    def sendMessages(self, client):
+    def sendMessages(self, client, username):
         while True:
             try:
                 time.sleep(1)
-                print('Processing...\n')
+                print('[Listener send message in client scope] - Under monitoring...\n')
                 if len(self.__send) > 0:
-                    self.send(client, self.__send)
+                    self.send(client, username, self.__send)
                     if self.__send.startswith('#'):
                         response = openia_write(self.__send)
-                        self.send(client, "# " + str(response).strip())
-                    self.__send = ''
+                        self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
+                    self.setSendMessages('')
             except:
                 return
 
-    def send(self, client, prompt):
-        client.send(f'{prompt}'.encode('utf-8'))
+    def send(self, client, username, prompt):
+        client.send(f'{username}: {prompt}'.encode('utf-8'))
 
     def getReceiveMessage(self):
         return self.__receive
@@ -66,3 +66,6 @@ class Client():
 
     def setUsername(self, username):
         self.__username = username
+
+    def getUsername(self):
+        return self.__username

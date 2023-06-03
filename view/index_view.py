@@ -13,15 +13,13 @@ class App(customtkinter.CTk):
         super().__init__()
 
         # data
-        self.__username = ''
         self.__client = Client()
         self.__receive = ''
-        self.__operator = ''
 
-        #monitor
+        # monitor
         self.__thread = threading.Thread(target=self.monitorReceive)
 
-    # configure window
+        # configure window
         self.title("PROMETHEUS")
         self.geometry(f"{1100}x{580}")
 
@@ -60,7 +58,7 @@ class App(customtkinter.CTk):
         self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create textbox
-        self.textbox = customtkinter.CTkTextbox(self, state='disabled', width=1000, height=1000)
+        self.textbox = customtkinter.CTkTextbox(self,state='disabled', width=1000, height=1000)
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
 
         # create tabview
@@ -87,11 +85,10 @@ class App(customtkinter.CTk):
     def open_input_dialog_event(self):
         # establishing connection
         dialog = customtkinter.CTkInputDialog(text="Defina apelido:", title="Editar perfil")
-        self.__username = dialog.get_input()
+        self.__client.setUsername(dialog.get_input())
         self.text_tab_1.configure(state="normal")
-        self.text_tab_1.insert("0.0", f'\nConectando {self.__username} ao servidor.' + "\n")
+        self.text_tab_1.insert("0.0", f'\nConectando {self.__client.getUsername()} ao servidor.' + "\n")
         self.text_tab_1.configure(state="disabled")
-        self.__client.setUsername(self.__username)
         self.__client.connectClient()
         self.__thread.start()
 
@@ -103,24 +100,17 @@ class App(customtkinter.CTk):
         customtkinter.set_widget_scaling(new_scaling_float)
 
     def sidebar_button_event(self):
-        print(f'---- {self.entry.get()}\n')
         self.__client.setSendMessages(self.entry.get())
-
 
     def monitorReceive(self):
         while True:
             time.sleep(1)
-            print('>> Monitoring...\n')
+            print('[Listener receive message to view] - Under monitoring...\n')
             self.__receive = self.__client.getReceiveMessage()
-
-            if self.__receive.startswith("#"):
-                self.__operator = 'BOT-PROMETHEUS'
-            else:
-                self.__operator = self.__username
 
             if len(self.__receive) > 0:
                 self.textbox.configure(state="normal")
-                self.textbox.insert("0.0", f'<{self.__operator}> {self.__receive}' + "\n")
+                self.textbox.insert("0.0", f'{self.__receive}' + "\n\n")
                 self.textbox.configure(state="disabled")
                 self.__client.setReceiveMessage('')
 
