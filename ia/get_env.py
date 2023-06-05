@@ -14,5 +14,5 @@ def print_env(body):
 
 
 if __name__ == '__main__':
-    body = ['app-key']
+    body = ['chatGPT_key']
     print(print_env(body))

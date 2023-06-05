@@ -2,7 +2,8 @@ import threading
 import socket
 import time
 
-from ia.index_ia import openia_write
+from ia.chatGPT.index_chatGPT import chatGPT_write
+from ia.midJourney.index_midJourney import midJourney_call
 
 
 class Client():
@@ -46,8 +47,9 @@ class Client():
                 if len(self.__send) > 0:
                     self.send(client, username, self.__send)
                     if self.__send.startswith('#'):
-                        response = openia_write(self.__send)
-                        self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
+                        #response = chatGPT_write(self.__send)
+                        #self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
+                        midJourney_call()
                     self.setSendMessages('')
             except:
                 return
