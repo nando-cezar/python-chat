@@ -2,6 +2,9 @@ import threading
 import socket
 import time
 
+import requests
+from PIL import Image
+
 from ia.chatGPT.index_chatGPT import chatGPT_write
 from ia.midJourney.index_midJourney import midJourney_call
 
@@ -12,6 +15,8 @@ class Client():
         self.__username = ''
         self.__receive = ''
         self.__send = ''
+        self.__taskId = ''
+        self.__buffer_size = 2048
 
     def connectClient(self):
 
@@ -34,6 +39,7 @@ class Client():
                 time.sleep(1)
                 print('[Listener receive message in client scope] - Under monitoring...\n')
                 self.setReceiveMessage(client.recv(2048).decode('utf-8'))
+                self.renderImage()
             except:
                 print('\nNão foi possível permanecer conectado no servidor!\n')
                 print('Pressione <Enter> Para continuar...')
@@ -46,13 +52,31 @@ class Client():
                 print('[Listener send message in client scope] - Under monitoring...\n')
                 if len(self.__send) > 0:
                     self.send(client, username, self.__send)
-                    if self.__send.startswith('#'):
-                        response = chatGPT_write(self.__send)
-                        self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
-                        #midJourney_call()
+                    self.AIChoice(client)
                     self.setSendMessages('')
-            except:
-                return
+            except Exception as error:
+                return print(error)
+
+    def AIChoice(self, client):
+        if self.__send.startswith('#'):
+            response = chatGPT_write(self.__send)
+            self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
+        elif self.__send.startswith('@'):
+            image_token, url_image = midJourney_call(self.__send)
+            self.__taskId = image_token
+            self.send(client, 'BOT-PROMETHEUS', "@ " + str(url_image).strip())
+
+    def renderImage(self):
+        if self.__receive.startswith('BOT-PROMETHEUS: @'):
+            url_img = self.__receive.removeprefix('BOT-PROMETHEUS: @').strip()
+            response = requests.get(url_img, stream=True)
+
+            with open(f"../assets/{self.__taskId}.png", "wb+") as handler:
+                for data in response.iter_content(self.__buffer_size):
+                    handler.write(data)
+
+            img = Image.open(f"../assets/{self.__taskId}.png")
+            img.show()
 
     def send(self, client, username, prompt):
         client.send(f'{username}: {prompt}'.encode('utf-8'))
