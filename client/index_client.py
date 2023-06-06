@@ -38,19 +38,8 @@ class Client():
             try:
                 time.sleep(1)
                 print('[Listener receive message in client scope] - Under monitoring...\n')
-                receivedContent = client.recv(2048).decode('utf-8')
-                self.setReceiveMessage(receivedContent)
-
-                if self.getReceiveMessage().startswith('BOT-PROMETHEUS: @'):
-                    url_img = self.getReceiveMessage().removeprefix('BOT-PROMETHEUS: @').strip()
-                    response = requests.get(url_img, stream=True)
-
-                    with open(f"../assets/{self.getTaskId()}.png", "wb+") as handler:
-                        for data in response.iter_content(self.__buffer_size):
-                            handler.write(data)
-
-                    img = Image.open(f"../assets/{self.getTaskId()}.png")
-                    img.show()
+                self.setReceiveMessage(client.recv(2048).decode('utf-8'))
+                self.renderImage()
             except:
                 print('\nNão foi possível permanecer conectado no servidor!\n')
                 print('Pressione <Enter> Para continuar...')
@@ -63,16 +52,31 @@ class Client():
                 print('[Listener send message in client scope] - Under monitoring...\n')
                 if len(self.__send) > 0:
                     self.send(client, username, self.__send)
-                    if self.__send.startswith('#'):
-                        response = chatGPT_write(self.__send)
-                        self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
-                    elif self.__send.startswith('@'):
-                        image_token, url_image = midJourney_call(self.__send)
-                        self.setTaskId(image_token)
-                        self.send(client, 'BOT-PROMETHEUS', "@ " + str(url_image).strip())
+                    self.AIChoice(client)
                     self.setSendMessages('')
             except Exception as error:
                 return print(error)
+
+    def AIChoice(self, client):
+        if self.__send.startswith('#'):
+            response = chatGPT_write(self.__send)
+            self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
+        elif self.__send.startswith('@'):
+            image_token, url_image = midJourney_call(self.__send)
+            self.__taskId = image_token
+            self.send(client, 'BOT-PROMETHEUS', "@ " + str(url_image).strip())
+
+    def renderImage(self):
+        if self.__receive.startswith('BOT-PROMETHEUS: @'):
+            url_img = self.__receive.removeprefix('BOT-PROMETHEUS: @').strip()
+            response = requests.get(url_img, stream=True)
+
+            with open(f"../assets/{self.__taskId}.png", "wb+") as handler:
+                for data in response.iter_content(self.__buffer_size):
+                    handler.write(data)
+
+            img = Image.open(f"../assets/{self.__taskId}.png")
+            img.show()
 
     def send(self, client, username, prompt):
         client.send(f'{username}: {prompt}'.encode('utf-8'))
@@ -91,9 +95,3 @@ class Client():
 
     def getUsername(self):
         return self.__username
-
-    def setTaskId(self, taskId):
-        self.__taskId = taskId
-
-    def getTaskId(self):
-        return self.__taskId
