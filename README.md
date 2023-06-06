@@ -63,7 +63,7 @@ Lembre-se de compartilhar o arquivo "requirements.txt" atualizado junto com o c�
 
 Para executar o chat, utilize o seguinte comando:
 ```bash
-python view\initial_dialog.py
+python main.py
 ```
 # GitFlow
 
@@ -107,5 +107,6 @@ Contribuições são bem-vindas! Se você quiser contribuir para este projeto, s
     git push origin minha-feature
     ```
 1. Abra um pull request no repositório original
+
 ## Licença :memo:
 Este projeto está licenciado sob a MIT License.
