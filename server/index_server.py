@@ -26,25 +26,20 @@ def messagesTreatment(client):
     while True:
         try:
             msg = client.recv(2048)
-            contains_ia = str(msg).__contains__('PROMETHEUS')
-            broadcast(msg, client, contains_ia)
+            print(f'Message receive server: {msg}\n')
+            broadcast(msg, client)
         except:
             deleteClient(client)
             break
 
 
-def broadcast(msg, client, contains_ia):
+def broadcast(msg, client):
     for clientItem in clients:
-        if clientItem != client:
-            try:
-                clientItem.send(msg)
-            except:
-                deleteClient(clientItem)
-        elif clientItem == client and contains_ia:
-            try:
-                clientItem.send(msg)
-            except:
-                deleteClient(clientItem)
+        try:
+            clientItem.send(msg)
+        except:
+            deleteClient(clientItem)
+
 
 def deleteClient(client):
     clients.remove(client)
