@@ -47,9 +47,9 @@ class Client():
                 if len(self.__send) > 0:
                     self.send(client, username, self.__send)
                     if self.__send.startswith('#'):
-                        #response = chatGPT_write(self.__send)
-                        #self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
-                        midJourney_call()
+                        response = chatGPT_write(self.__send)
+                        self.send(client, 'BOT-PROMETHEUS', "# " + str(response).strip())
+                        #midJourney_call()
                     self.setSendMessages('')
             except:
                 return
