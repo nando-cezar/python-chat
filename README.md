@@ -65,10 +65,31 @@ Para executar o chat, utilize o seguinte comando:
 ```bash
 python view\initial_dialog.py
 ```
+# GitFlow
 
-Isso iniciará o chat e você poderá interagir com as inteligências artificiais implementadas.
+O GitFlow é um modelo de fluxo de trabalho popular baseado no Git, que define uma estrutura clara para o desenvolvimento colaborativo de software. Ele define um conjunto de regras e convenções para gerenciar as branches e as versões de um projeto.
 
-## Contribuição :handshake:
+## Branches :twisted_rightwards_arrows:
+
+O GitFlow define diferentes tipos de branches para organizar o trabalho colaborativo. Aqui estão algumas das principais branches utilizadas:
+
+- **Main**: A branch Main contém o código fonte da versão estável do projeto. Ela é atualizada apenas quando uma nova versão é lançada.
+
+- **Develop**: A branch Develop é a principal branch de desenvolvimento. Ela é usada para integrar as alterações de diferentes branches de feature e preparar a próxima versão estável do projeto.
+
+- **Feature**: As branches de Feature são criadas a partir da branch Develop. Elas são usadas para desenvolver novas funcionalidades ou fazer alterações específicas no código. Cada feature deve ser criada em uma branch separada, facilitando a colaboração e o gerenciamento de alterações. Recomenda-se criar a branch feature a partir de uma issue do GitHub
+
+## Issues :pencil: 
+
+No GitFlow, é recomendado o uso de issues para rastrear ideias, bugs e tarefas do projeto. As issues podem ser abertas e atribuídas a diferentes colaboradores, permitindo um melhor acompanhamento do progresso e da resolução de problemas.
+
+## Pull Requests :arrows_clockwise:
+
+O GitFlow enfatiza o uso de pull requests (PRs) para facilitar a revisão e a integração de código. Após concluir o trabalho em uma branch de feature, um colaborador pode abrir um PR para mesclar as alterações na branch Develop. Isso permite que outros membros da equipe revisem o código, forneçam feedback e garantam a qualidade antes da integração.
+
+Além disso, apenas a branch Develop deve ser mesclada na branch Main. Isso garante que apenas as versões estáveis e revisadas sejam incluídas na branch Main.
+
+# Contribuição :handshake:
 Contribuições são bem-vindas! Se você quiser contribuir para este projeto, siga as etapas abaixo:
 
 1. Faça um fork do repositório.
