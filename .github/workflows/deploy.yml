@@ -1,0 +1,32 @@
+name: Push-to-EC2
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  deploy_if_merged:
+    if: github.event.pull_request.merged == true
+    name: Deploy to EC2
+    runs-on: UBUNTU-LATEST
+
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v3
+
+      - name: Copy files using SSH
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.EC2_SSH_KEY}}
+          SOURCE: "./"
+          REMOTE_HOST: ${{secrets.REMOTE_HOST}}
+          REMOTE_USER: ${{secrets.REMOTE_USER}}
+          TARGET: ${{secrets.TARGET}}
+          EXCLUDE: ""
+          SCRIPT_AFTER: |
+            python3 -m venv env
+            source env/bin/activate
+            pip install -r requirements.txt
+            python3 ./server/index_server.py
