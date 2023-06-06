@@ -3,7 +3,6 @@ import json
 
 from PIL import Image
 from ia.get_env import print_env
-from urllib import request
 
 
 env = print_env(['midJourney_key'])
@@ -12,6 +11,7 @@ api_key = env['midJourney_key']
 
 url = "https://api.midjourneyapi.io/v2/"
 
+buffer_size = 1024
 
 def midJourney_imagine(prompt):
     headers = {
@@ -46,11 +46,13 @@ def midJourney_call():
     prompt = ''
     taskId = '42539724384585875399397193481003'
     url_img = midJourney_result(taskId)
-    img_data = requests.get(url_img).content
-    with open(f'../../assets/{taskId}.png', 'wb') as handler:
-        handler.write(img_data)
+    response = requests.get(url_img, stream=True)
 
-    img = Image.open(f"../../assets/{taskId}.png")
+    with open(f"../assets/{taskId}.png", "wb+") as handler:
+        for data in response.iter_content(buffer_size):
+            handler.write(data)
+
+    img = Image.open(f"../assets/{taskId}.png")
     img.show()
 
 
