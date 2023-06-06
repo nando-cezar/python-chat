@@ -27,13 +27,13 @@ def messagesTreatment(client):
         try:
             msg = client.recv(2048)
             print(f'Message receive server: {msg}\n')
-            broadcast(msg, client)
+            broadcast(msg)
         except:
             deleteClient(client)
             break
 
 
-def broadcast(msg, client):
+def broadcast(msg):
     for clientItem in clients:
         try:
             clientItem.send(msg)
