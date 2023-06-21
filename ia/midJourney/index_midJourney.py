@@ -52,3 +52,4 @@ def midJourney_call(prompt):
 
 if __name__ == '__main__':
     print(midJourney_call('Test connection'))
+

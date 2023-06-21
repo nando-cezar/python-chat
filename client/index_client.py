@@ -3,6 +3,7 @@ import socket
 import time
 
 import urllib.request as request
+
 from PIL import Image
 
 from ia.chatGPT.index_chatGPT import chatGPT_write
