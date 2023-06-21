@@ -2,7 +2,8 @@ import threading
 import socket
 import time
 
-import requests
+import urllib.request as request
+
 from PIL import Image
 
 from ia.chatGPT.index_chatGPT import chatGPT_write
@@ -69,13 +70,17 @@ class Client():
     def renderImage(self):
         if self.__receive.startswith('BOT-PROMETHEUS: @'):
             url_img = self.__receive.removeprefix('BOT-PROMETHEUS: @').strip()
-            response = requests.get(url_img, stream=True)
 
-            with open(f"../assets/{self.__taskId}.png", "wb+") as handler:
-                for data in response.iter_content(self.__buffer_size):
-                    handler.write(data)
+            opener = request.build_opener()
+            opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+            request.install_opener(opener)
+            try:
+                request.urlretrieve(url_img, f"./assets/{self.__taskId}.png")
+                print('Success!')
+            except Exception as ex:
+                print(ex)
 
-            img = Image.open(f"../assets/{self.__taskId}.png")
+            img = Image.open(f"./assets/{self.__taskId}.png")
             img.show()
 
     def send(self, client, username, prompt):
