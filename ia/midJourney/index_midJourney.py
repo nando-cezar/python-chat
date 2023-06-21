@@ -16,7 +16,8 @@ buffer_size = 1024
 def midJourney_imagine(prompt):
     headers = {
         'Authorization': api_key,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0'
     }
 
     payload = json.dumps({
@@ -50,4 +51,4 @@ def midJourney_call(prompt):
 
 
 if __name__ == '__main__':
-    midJourney_call('Test connection')
+    print(midJourney_call('Test connection'))
